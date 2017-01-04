@@ -1,0 +1,137 @@
+Differential equations:
+dl/dT = change in plasma insulin concentration
+dla/dt = the build-up and the deactivation of the 'active' insulin pool
+
+
+Constants:
+k_e    = first-order rate constant of insulin elimination = 5.4 l/hr
+Vi     = volume of insulin distribution
+k1, k2 = first-order rate constants describing delay in insulin activation = 0.025, 1.25/hr
+s      = preparation specific parameter defining the insulin absorption pattern of the different types of insulin catered for in the model (short-, intermediate- and long-acting)
+a, b   = preparation specific parameters
+
+
+
+Functions/dependancies:
+iabs(t) = rate of insulin absorbtion
+ia(t) = active insulin pool
+T50    = time at which 50% of the dose D has been absorbed
+
+
+Variables:
+t (labs) = time elapsed from insulin injection
+D (labs) = dose 
+
+
+constants w/ values
+
+ke     = 5.4l/hr
+k1     = 0.025/hr
+k2     = 1.25/hr
+Ibasal = 10mU/l
+Km     = 10mmol/l
+GI     = 0.54mmol/hr/kg
+GX     = 5.3mmol/l
+c      = 0.015mmol/hr/kg/mU*l
+kgabs  = 1/hr
+Vmaxge = 120mmol/hr
+VI     = 0.142l/kg
+Vg     = 0.22l/kg
+
+
+functions + constant values
+
+
+Change in plasma insulin concentration, where i is the current plama insulin concentration:
+
+di   iabs(t)
+-- = ---------- - (5.4 l/hr * i)
+dT   0.142 l/kg
+
+
+build up and deactivation of active insulin pool (ia):
+
+dla
+--- = (0.025/hr * l) - (1.25/hr * ia)
+dt
+
+
+rate of insulin absorbtion, where T50 is the half-life of the dose and s is an insulin-specific parameter and D is dose:
+
+          s*t * T50 * D
+iabs(t) = ------------------
+          t* [T50 + t]^2
+
+
+Linear dependancy T50 on dose, where a and b are preperation specific parameters:
+
+T50 = a * D + b
+
+
+if insulin regime > 1 injection/component, labs = sum of individual labs
+
+
+steady state insulin profile:
+Iss(t) = I(t) + I(t+24) + I(t+48)               Note, maybe not needed past I(t)
+Ia,ss(t) = ia(t) + ia(t+24) + ia(t+48)           Note, maybe not needed past la(t)
+
+
+
+insulin level resposible for hepatic + peripheral control, I#eq  is insulin level in equilbrium with Ia,ss(t)
+
+                    Ia,ss(t)
+I#eq(t) = 1.25/hr * --------
+                    0.025/hr
+
+change in glucose concentration over time, G is plasma concentration, Gin is intake from gut, Gout is insulin-independent glucose utilisation, NHGB is net hepatic (liver) glucose balance, Gren is renal (kidney) glucose extraction:
+
+dG   Gin(t) + NHGB(t) - Gout(t) - Grem(t)
+-- = ------------------------------------
+dt                 0.22 l/kg
+
+
+
+classical Michaelis-Menten relationship between glucose utilisation and the plasma glucose concentration:
+c is slope of peripheral glucose utilisation vs insulin level relationship, GI is the insulin-independent glucose utilisation and GX is a reference glucose level
+
+
+                G*(c*Sp*I#eq + GI)*(Km + GX)              G*(0.015mmol/hr/kg/mU*l * Sp * I#eq + 0.54mmol/hr/kg)*(10mmol/l+ 5.3mmol/l)
+Gout(G, I#eq) = ------------------------------------- = ------------------------------------------------------------------------------
+                        GX*(Km + G)                                             5.3mmol/l*(10mmol/l + G)
+
+
+
+The NHGB value at any combination of G and I#eq has been derived from the data summarised in Table 1 using Sh * I#eq as the effective insulin level. The amount of glucose in the gut, Ggut, following the ingestion of a meal containing Ch millimoles of glucose equivalent carbohydrate is defined as:
+
+kgabs is rate constant of glucose absorption from gut into systemic circulation, Gempt is rate of gastric emptying
+
+d(Ggut)
+------- = Gempt - kgabs * Ggut = Gempt - 1/hr * Ggut
+  dt
+
+
+The duration of the period Tmaxge for which gastric emptying is constant and maximal (Vmaxge) is a function of the carbohydrate content of the meal ingested where Vmaxge is the maximal rate of gastric emptying and Tascge and Tdesge are the respective lengths of the ascending and descending branches of the gastric emptying curve which have default values in the model of 30 mins (0.5 hrs).
+
+             Ch - Vmaxge               Ch - 120mmol/hr 
+           ----------------------    ----------------------
+             2(Tascge + Tdesge)   =    2(Tascge + Tdesge)
+Tmaxge =  -----------------------   -----------------------
+             Vmaxge                      120 mmol/hr 
+
+
+For small values of carbs (<10g):
+                
+                  2 * Ch       2 * Ch
+Tasge = Tdesge = --------- =  ----------
+                  Vmaxge      120mmol/hr 
+
+http://www.2aida.net/aida/gut.htm
+
+Above is only used when carbs fall below chchrit:
+
+         (Tasge + Tdesge) * 120mmol/hr
+Chcrit = -----------------------------
+                       2
+
+Gut wall glucose intake, Gin:
+Gin = kgabs * Ggut = 1/hr * Ggut
