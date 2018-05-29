@@ -4,7 +4,7 @@
 # import time
 
 
-class glucoseSim:
+class AIDASim:
     def __init__(self):
         self.ke = 5.4      # l/hr
         self.k1 = 0.025    # /hr
@@ -21,7 +21,7 @@ class glucoseSim:
 
         self.a = 0  # TODO: Get params
         self.b = 0  # TODO: Get params
-        self.s      # TODO: Get params
+        self.s = 0  # TODO: Get params
 
         self.D = 0         # Dose
         self.t = 0         # Time elapsed from insulin injection
@@ -32,19 +32,23 @@ class glucoseSim:
         self.Ia = 0        # Active insulin pool
 
     def T50(self):
+        """calculates time when 50% of dose will be absorbed"""
         return (self.a * self.D) + self.b
 
     def Iabs(self, t):
+        """calculates current insulin absorbtion rate"""
         top = self.s * self.t * self.T50(self.t) * self.D
         bottom = self.t * (self.T50(self.t) + self.t)**2
         return top/bottom
 
-    def dIdT(self, old, dt, t):
+    def di_dT(self, old, dt, t):
+        """Change in plasma insulin concentration. Old is the current insulin
+        concentration, dt is the change in time, and """
         term1 = self.Iabs(t)/self.VI
         term2 = self.ke * self.I
         return old + dt*(term1 - term2)  # Shitty version of euler's method
 
-    def dIadt(self, old, dt):
+    def dia_dt(self, old, dt):
         term1 = (self.k1 * self.I)
         term2 = (self.k2 * self.Ia)
         return old + dt*(term1 - term2)

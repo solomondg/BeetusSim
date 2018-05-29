@@ -13,8 +13,8 @@ a, b   = preparation specific parameters
 
 
 Functions/dependancies:
-iabs(t) = rate of insulin absorbtion
-ia(t) = active insulin pool
+iabs(t) = insulin absorption rate
+ia(t) = insulin active pool amount
 T50    = time at which 50% of the dose D has been absorbed
 
 
@@ -120,7 +120,7 @@ Tmaxge =  -----------------------   -----------------------
 
 
 For small values of carbs (<10g):
-                
+                -(
                   2 * Ch       2 * Ch
 Tasge = Tdesge = --------- =  ----------
                   Vmaxge      120mmol/hr 
